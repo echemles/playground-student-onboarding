@@ -1,3 +1,11 @@
+/**
+ * @file Test suite for Column component
+ * 
+ * This test suite verifies the functionality of the Column component,
+ * which displays a column of student cards in a drag-and-drop board.
+ * It tests rendering, student card display, and drag-and-drop behavior.
+ */
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -5,6 +13,7 @@ import { Column } from '../Column';
 import { Column as ColumnType, Student } from '@/lib/types';
 
 // Mock the Droppable component from @hello-pangea/dnd
+// This mock simulates the drag-and-drop container behavior for testing
 jest.mock('@hello-pangea/dnd', () => ({
   Droppable: ({
     children,

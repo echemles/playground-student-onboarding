@@ -1,3 +1,15 @@
+/**
+ * Board Component
+ * 
+ * The main board component that manages the drag-and-drop functionality
+ * for moving students between different status columns.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {BoardData} props.initialData - Initial data for the board including students and columns
+ * @returns {JSX.Element} Rendered component
+ */
+
 'use client';
 
 import { useState } from 'react';
@@ -7,10 +19,19 @@ import { Column } from './Column';
 import { Toaster, toast } from 'sonner';
 import { AddStudentDialog } from './AddStudentDialog';
 
+/**
+ * Props for the Board component
+ * @interface BoardProps
+ * @property {BoardData} initialData - Initial board data including students and columns
+ */
 interface BoardProps {
   initialData: BoardData;
 }
 
+/**
+ * Main board component that handles drag-and-drop functionality
+ * and manages the state of students across different columns
+ */
 export function Board({ initialData }: BoardProps) {
   const [data, setData] = useState(initialData);
 
@@ -138,7 +159,11 @@ export function Board({ initialData }: BoardProps) {
       </header>
       <main className="flex-1 p-4 bg-gray-950">
         <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex flex-col md:flex-row gap-4 overflow-x-auto pb-4">
+          <div 
+            className="flex flex-col md:flex-row gap-4 p-4 md:p-8 overflow-x-auto pb-4"
+            role="main"
+            aria-label="Student Onboarding Board"
+          >
             {data.columnOrder.map((columnId) => {
               const column = data.columns[columnId];
               const students = column.studentIds.map(

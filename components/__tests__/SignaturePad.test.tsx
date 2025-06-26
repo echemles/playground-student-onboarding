@@ -1,9 +1,18 @@
+/**
+ * @file Test suite for SignaturePad component
+ * 
+ * This test suite verifies the functionality of the SignaturePad component,
+ * which provides a canvas for capturing digital signatures. It tests rendering,
+ * signature capture, saving, clearing, and editing functionality.
+ */
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { SignaturePad } from '../ui/signature-pad';
 
-// Create a mock implementation of SignaturePad that doesn't rely on canvas
+// Mock the SignaturePad component to avoid canvas operations in tests
+// This mock simulates the signature pad behavior without actual canvas rendering
 jest.mock('../ui/signature-pad', () => {
   const MockSignaturePad = ({ onSave, initialSignature }: { 
     onSave: (signature: string) => void; 

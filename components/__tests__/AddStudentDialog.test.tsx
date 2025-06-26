@@ -1,9 +1,18 @@
+/**
+ * @file Test suite for AddStudentDialog component
+ * 
+ * This test suite verifies the functionality of the AddStudentDialog component,
+ * which provides a form to add new students to the system. It tests form rendering,
+ * user interactions, validation, and submission behavior.
+ */
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AddStudentDialog } from '../AddStudentDialog';
 
-// Mock the UI components
+// Mock the Dialog component from @/components/ui/dialog
+// This mock simulates the dialog's open/close behavior and structure for testing
 jest.mock('@/components/ui/dialog', () => {
   interface MockDialogProps {
     children: React.ReactNode;

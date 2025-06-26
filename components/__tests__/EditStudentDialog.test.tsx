@@ -1,10 +1,19 @@
+/**
+ * @file Test suite for EditStudentDialog component
+ * 
+ * This test suite verifies the functionality of the EditStudentDialog component,
+ * which provides a form to edit existing student information. It tests form population,
+ * user interactions, validation, and update submission behavior.
+ */
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { EditStudentDialog } from '../EditStudentDialog';
 import { Student } from '@/lib/types';
 
-// Mock the UI components
+// Mock the Dialog component from @/components/ui/dialog
+// This mock simulates the dialog's open/close behavior and structure for testing
 jest.mock('@/components/ui/dialog', () => {
   interface MockDialogProps {
     children: React.ReactNode;

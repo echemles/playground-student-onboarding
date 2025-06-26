@@ -1,5 +1,7 @@
 'use client';
 
+import NextImage from 'next/image';
+
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import { Button } from '@/components/ui/button';
@@ -33,7 +35,7 @@ export function SignaturePad({ onSave, initialSignature, className }: SignatureP
         }
       }
     }
-  }, [initialSignature]);
+  }, [initialSignature, savedSignature]);
 
   const clear = useCallback(() => {
     // Clear the canvas if it exists
@@ -56,7 +58,6 @@ export function SignaturePad({ onSave, initialSignature, className }: SignatureP
     if (sigCanvas.current && !isEmpty) {
       // Create signature with white background
       const canvas = sigCanvas.current.getCanvas();
-      const context = canvas.getContext('2d');
       
       // Get the current signature data
       const signatureData = sigCanvas.current.toDataURL('image/png');
@@ -145,10 +146,12 @@ export function SignaturePad({ onSave, initialSignature, className }: SignatureP
         <>
           <div className="border border-gray-300 rounded-md bg-white p-2">
             {savedSignature && (
-              <img 
+              <NextImage 
                 src={savedSignature} 
                 alt="Saved signature" 
-                className="max-h-32 mx-auto" 
+                width={200}
+                height={100}
+                className="max-h-32 mx-auto"
               />
             )}
           </div>

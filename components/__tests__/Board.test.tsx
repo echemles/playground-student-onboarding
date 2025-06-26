@@ -1,10 +1,20 @@
+/**
+ * @file Test suite for Board component
+ * 
+ * This test suite verifies the functionality of the Board component,
+ * which manages the main application state and orchestrates drag-and-drop
+ * functionality between columns. It tests drag-and-drop behavior, state updates,
+ * and integration with child components.
+ */
+
 import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { Board } from '../Board';
 import { BoardData, Student } from '@/lib/types';
 import { toast } from 'sonner';
 
-// Define interfaces for mock objects to improve type safety
+// Define TypeScript interfaces for mock objects
+// These interfaces ensure type safety for the test mocks and simulate the behavior of react-beautiful-dnd
 interface MockDraggableLocation {
   droppableId: string;
   index: number;

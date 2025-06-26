@@ -1,3 +1,11 @@
+/**
+ * @file Test suite for StudentCard component
+ * 
+ * This test suite verifies the functionality of the StudentCard component,
+ * which displays individual student information and handles drag-and-drop operations.
+ * It tests rendering, drag-and-drop behavior, and integration with the edit dialog.
+ */
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -5,6 +13,7 @@ import { StudentCard } from '../StudentCard';
 import { Student } from '@/lib/types';
 
 // Mock the Draggable component from @hello-pangea/dnd
+// This mock simulates the draggable behavior for testing without the actual drag-and-drop library
 jest.mock('@hello-pangea/dnd', () => ({
   Draggable: ({
     children,

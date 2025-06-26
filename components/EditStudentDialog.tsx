@@ -1,3 +1,16 @@
+/**
+ * EditStudentDialog Component
+ * 
+ * A dialog component that allows users to edit an existing student's information.
+ * Includes form fields for student details and a signature pad for digital signatures.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Student} props.student - The student data to edit
+ * @param {Function} props.onUpdate - Callback function to handle student updates
+ * @returns {JSX.Element} Rendered component
+ */
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,11 +26,21 @@ import { Label } from '@/components/ui/label';
 import { SignaturePad } from '@/components/ui/signature-pad';
 import { Student } from '@/lib/types';
 
+/**
+ * Props for the EditStudentDialog component
+ * @interface EditStudentDialogProps
+ * @property {Student} student - The student data to edit
+ * @property {Function} onUpdate - Callback function that receives the updated student data
+ */
 interface EditStudentDialogProps {
   student: Student;
   onUpdate: (id: string, updatedStudent: Student) => void;
 }
 
+/**
+ * Main component for editing an existing student
+ * Manages form state and handles form submission with updated student data
+ */
 export function EditStudentDialog({ student, onUpdate }: EditStudentDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [editedStudent, setEditedStudent] = useState<Student>(student);
@@ -77,6 +100,7 @@ export function EditStudentDialog({ student, onUpdate }: EditStudentDialogProps)
               value={editedStudent.name}
               onChange={handleInputChange}
               className="col-span-3 bg-gray-700 border-gray-600 text-gray-100"
+              aria-label="Student Name"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -89,6 +113,7 @@ export function EditStudentDialog({ student, onUpdate }: EditStudentDialogProps)
               value={editedStudent.email}
               onChange={handleInputChange}
               className="col-span-3 bg-gray-700 border-gray-600 text-gray-100"
+              aria-label="Student Email"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -101,6 +126,7 @@ export function EditStudentDialog({ student, onUpdate }: EditStudentDialogProps)
               value={editedStudent.contact}
               onChange={handleInputChange}
               className="col-span-3 bg-gray-700 border-gray-600 text-gray-100"
+              aria-label="Student Contact"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
