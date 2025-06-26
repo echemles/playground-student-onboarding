@@ -136,7 +136,7 @@ export function Board({ initialData }: BoardProps) {
         </h1>
         <AddStudentDialog onAddStudent={handleAddStudent} />
       </header>
-      <main className="flex-1 overflow-x-auto p-4 bg-gray-950">
+      <main className="flex-1 p-4 bg-gray-950">
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex flex-col md:flex-row gap-4 overflow-x-auto pb-4">
             {data.columnOrder.map((columnId) => {

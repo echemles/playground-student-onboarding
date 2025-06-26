@@ -107,7 +107,40 @@ jest.mock('@/components/ui/label', () => ({
     <label htmlFor={htmlFor} className={className} data-testid={`label-${htmlFor}`}>
       {children}
     </label>
-  ),
+  )
+}));
+
+// Mock the SignaturePad component
+jest.mock('@/components/ui/signature-pad', () => ({
+  SignaturePad: ({ onSave, initialSignature }: { 
+    onSave: (signature: string) => void; 
+    initialSignature?: string;
+  }) => {
+    // Mock implementation that uses data-testid for reliable test selection
+    return (
+      <div data-testid="signature-pad">
+        {initialSignature && (
+          <img 
+            src={initialSignature} 
+            alt="Saved signature" 
+            data-testid="saved-signature" 
+          />
+        )}
+        <button 
+          onClick={() => onSave('data:image/png;base64,mock-signature')} 
+          data-testid="save-signature-button"
+        >
+          Save Signature
+        </button>
+        <button 
+          onClick={() => onSave('')} 
+          data-testid="clear-signature-button"
+        >
+          Clear
+        </button>
+      </div>
+    );
+  }
 }));
 
 describe('AddStudentDialog', () => {
@@ -212,6 +245,7 @@ describe('AddStudentDialog', () => {
       name: 'John Doe',
       email: 'john@example.com',
       contact: '123-456-7890',
+      signature: ''
     });
   });
   
@@ -242,7 +276,70 @@ describe('AddStudentDialog', () => {
     expect(mockOnAddStudent).not.toHaveBeenCalled();
   });
   
-  it('resets form fields after successful submission', async () => {
+  it('allows adding a signature to a new student', async () => {
+    render(<AddStudentDialog onAddStudent={mockOnAddStudent} />);
+    
+    // Open the dialog
+    fireEvent.click(screen.getByTestId('dialog-trigger'));
+    
+    // Fill in required fields
+    fireEvent.change(screen.getByTestId('input-name'), { target: { value: 'Test Student' } });
+    fireEvent.change(screen.getByTestId('input-email'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByTestId('input-contact'), { target: { value: '1234567890' } });
+    
+    // Save a signature
+    fireEvent.click(screen.getByTestId('save-signature-button'));
+    
+    // Submit the form - use the button in the dialog footer
+    const submitButton = screen.getAllByText('Add Student').find(button => 
+      button.closest('[data-testid="dialog-footer"]')
+    );
+    if (!submitButton) throw new Error('Submit button not found');
+    fireEvent.click(submitButton);
+    
+    // Check that onAddStudent was called with the signature
+    expect(mockOnAddStudent).toHaveBeenCalledWith({
+      name: 'Test Student',
+      email: 'test@example.com',
+      contact: '1234567890',
+      signature: 'data:image/png;base64,mock-signature'
+    });
+  });
+
+  it('allows clearing a signature', async () => {
+    render(<AddStudentDialog onAddStudent={mockOnAddStudent} />);
+    
+    // Open the dialog
+    fireEvent.click(screen.getByTestId('dialog-trigger'));
+    
+    // Save a signature first
+    fireEvent.click(screen.getByTestId('save-signature-button'));
+    
+    // Now clear it
+    fireEvent.click(screen.getByTestId('clear-signature-button'));
+    
+    // Fill in required fields and submit
+    fireEvent.change(screen.getByTestId('input-name'), { target: { value: 'Test Student' } });
+    fireEvent.change(screen.getByTestId('input-email'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByTestId('input-contact'), { target: { value: '1234567890' } });
+    
+    // Submit the form - use the button in the dialog footer
+    const submitButton = screen.getAllByText('Add Student').find(button => 
+      button.closest('[data-testid="dialog-footer"]')
+    );
+    if (!submitButton) throw new Error('Submit button not found');
+    fireEvent.click(submitButton);
+    
+    // Check that onAddStudent was called without a signature
+    expect(mockOnAddStudent).toHaveBeenCalledWith({
+      name: 'Test Student',
+      email: 'test@example.com',
+      contact: '1234567890',
+      signature: ''
+    });
+  });
+
+  it('resets form fields including signature after successful submission', async () => {
     render(<AddStudentDialog onAddStudent={mockOnAddStudent} />);
     
     // Open the dialog

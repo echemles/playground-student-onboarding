@@ -30,9 +30,19 @@ export function StudentCard({ student, index, onUpdate }: StudentCardProps) {
             <p className="mb-1 break-words">
               <span className="text-gray-400">Email:</span> {student.email}
             </p>
-            <p className="break-words">
+            <p className="mb-1 break-words">
               <span className="text-gray-400">Contact:</span> {student.contact}
             </p>
+            {student.signature && (
+              <div className="mt-2">
+                <span className="text-gray-400 block mb-1">Signature:</span>
+                <img 
+                  src={student.signature} 
+                  alt="Student signature" 
+                  className="max-h-16 border border-gray-700 rounded bg-white p-1" 
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

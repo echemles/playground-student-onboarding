@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SignaturePad } from '@/components/ui/signature-pad';
 import { Student } from '@/lib/types';
 
 interface AddStudentDialogProps {
@@ -21,19 +22,33 @@ export function AddStudentDialog({ onAddStudent }: AddStudentDialogProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [contact, setContact] = useState('');
+  const [signature, setSignature] = useState('');
 
   const handleSubmit = () => {
     if (name && email && contact) {
-      onAddStudent({ name, email, contact });
+      onAddStudent({ name, email, contact, signature });
       setIsOpen(false);
-      setName('');
-      setEmail('');
-      setContact('');
+      resetForm();
+    }
+  };
+
+  const resetForm = () => {
+    setName('');
+    setEmail('');
+    setContact('');
+    setSignature('');
+  };
+
+  // Reset form when dialog closes
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      resetForm();
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" className="bg-gray-800 hover:bg-gray-700 text-gray-200 border-gray-700">
           Add Student
@@ -61,6 +76,14 @@ export function AddStudentDialog({ onAddStudent }: AddStudentDialogProps) {
               Contact
             </Label>
             <Input id="contact" value={contact} onChange={(e) => setContact(e.target.value)} className="col-span-3 bg-gray-700 border-gray-600" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="signature" className="text-right">
+              Signature
+            </Label>
+            <div className="col-span-3">
+              <SignaturePad onSave={setSignature} initialSignature={signature} />
+            </div>
           </div>
         </div>
         <DialogFooter>

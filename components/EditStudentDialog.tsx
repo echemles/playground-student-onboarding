@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SignaturePad } from '@/components/ui/signature-pad';
 import { Student } from '@/lib/types';
 
 interface EditStudentDialogProps {
@@ -29,13 +30,29 @@ export function EditStudentDialog({ student, onUpdate }: EditStudentDialogProps)
     }));
   };
 
+  const handleSignatureChange = (signatureData: string) => {
+    setEditedStudent((prev) => ({
+      ...prev,
+      signature: signatureData,
+    }));
+  };
+
   const handleSubmit = () => {
     onUpdate(student.id, editedStudent);
     setIsOpen(false);
   };
 
+  // Reset form when dialog closes and ensure signature state is properly handled
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      // When opening, reset to the current student data
+      setEditedStudent(student);
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -85,6 +102,17 @@ export function EditStudentDialog({ student, onUpdate }: EditStudentDialogProps)
               onChange={handleInputChange}
               className="col-span-3 bg-gray-700 border-gray-600 text-gray-100"
             />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="signature" className="text-right">
+              Signature
+            </Label>
+            <div className="col-span-3">
+              <SignaturePad 
+                onSave={handleSignatureChange} 
+                initialSignature={editedStudent.signature} 
+              />
+            </div>
           </div>
         </div>
         <DialogFooter>

@@ -114,6 +114,39 @@ jest.mock('@/components/ui/label', () => ({
   ),
 }));
 
+// Mock the SignaturePad component
+jest.mock('@/components/ui/signature-pad', () => ({
+  SignaturePad: ({ onSave, initialSignature }: { 
+    onSave: (signature: string) => void; 
+    initialSignature?: string;
+  }) => {
+    // Mock implementation that uses data-testid for reliable test selection
+    return (
+      <div data-testid="signature-pad">
+        {initialSignature && (
+          <img 
+            src={initialSignature} 
+            alt="Saved signature" 
+            data-testid="saved-signature" 
+          />
+        )}
+        <button 
+          onClick={() => onSave('data:image/png;base64,mock-signature')} 
+          data-testid="save-signature-button"
+        >
+          Save Signature
+        </button>
+        <button 
+          onClick={() => onSave('')} 
+          data-testid="clear-signature-button"
+        >
+          Clear
+        </button>
+      </div>
+    );
+  }
+}));
+
 describe('EditStudentDialog', () => {
   const mockStudent: Student = {
     id: 'student-1',
@@ -241,5 +274,81 @@ describe('EditStudentDialog', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('dialog-content')).not.toBeInTheDocument();
     });
+  });
+
+  it('allows adding a signature to a student', async () => {
+    render(<EditStudentDialog student={mockStudent} onUpdate={mockOnUpdate} />);
+    
+    // Open the dialog
+    fireEvent.click(screen.getByTestId('dialog-trigger'));
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('dialog-content')).toBeInTheDocument();
+    });
+    
+    // Save a signature
+    fireEvent.click(screen.getByTestId('save-signature-button'));
+    
+    // Submit the form
+    const saveButton = screen.getByText('Save changes');
+    fireEvent.click(saveButton);
+    
+    // Check that onUpdate was called with the signature
+    expect(mockOnUpdate).toHaveBeenCalledWith(mockStudent.id, {
+      ...mockStudent,
+      signature: 'data:image/png;base64,mock-signature'
+    });
+  });
+  
+  it('allows clearing a signature', async () => {
+    // Create a student with a signature
+    const studentWithSignature = {
+      ...mockStudent,
+      signature: 'data:image/png;base64,existing-signature'
+    };
+    
+    render(<EditStudentDialog student={studentWithSignature} onUpdate={mockOnUpdate} />);
+    
+    // Open the dialog
+    fireEvent.click(screen.getByTestId('dialog-trigger'));
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('dialog-content')).toBeInTheDocument();
+    });
+    
+    // Clear the signature
+    fireEvent.click(screen.getByTestId('clear-signature-button'));
+    
+    // Submit the form
+    const saveButton = screen.getByText('Save changes');
+    fireEvent.click(saveButton);
+    
+    // Check that onUpdate was called with an empty signature
+    expect(mockOnUpdate).toHaveBeenCalledWith(mockStudent.id, {
+      ...mockStudent,
+      signature: ''
+    });
+  });
+  
+  it('shows existing signature when editing', async () => {
+    // Create a student with a signature
+    const studentWithSignature = {
+      ...mockStudent,
+      signature: 'data:image/png;base64,existing-signature'
+    };
+    
+    render(<EditStudentDialog student={studentWithSignature} onUpdate={mockOnUpdate} />);
+    
+    // Open the dialog
+    fireEvent.click(screen.getByTestId('dialog-trigger'));
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('dialog-content')).toBeInTheDocument();
+    });
+    
+    // Check that the saved signature is displayed
+    const signatureImg = screen.getByTestId('saved-signature');
+    expect(signatureImg).toBeInTheDocument();
+    expect(signatureImg).toHaveAttribute('src', 'data:image/png;base64,existing-signature');
   });
 });
