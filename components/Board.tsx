@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { BoardData, Student } from '@/lib/types';
 import { Column } from './Column';

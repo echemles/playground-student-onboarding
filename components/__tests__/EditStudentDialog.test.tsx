@@ -6,17 +6,27 @@ import { Student } from '@/lib/types';
 
 // Mock the UI components
 jest.mock('@/components/ui/dialog', () => {
-  const MockDialog = ({ children, open, onOpenChange }: any) => {
-    // Store the onOpenChange callback to use in the mock
-    (MockDialog as any).onOpenChange = onOpenChange;
+  interface MockDialogProps {
+    children: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+  }
+
+  interface DialogChildProps {
+    children?: React.ReactNode;
+    asChild?: boolean;
+  }
+
+  const MockDialog = ({ children, open, onOpenChange }: MockDialogProps) => {
     
     // Extract DialogTrigger and DialogContent from children
     let trigger = null;
     let content = null;
     
     React.Children.forEach(children, (child) => {
-      if (child?.props?.asChild) {
-        trigger = child.props.children;
+      const typedChild = child as React.ReactElement<DialogChildProps>;
+      if (typedChild && typedChild.props && typedChild.props.asChild) {
+        trigger = typedChild.props.children;
       } else {
         content = child;
       }
@@ -34,16 +44,26 @@ jest.mock('@/components/ui/dialog', () => {
   
   return {
     Dialog: MockDialog,
-    DialogContent: ({ children, className }: any) => <div data-testid="dialog-content-inner">{children}</div>,
-    DialogHeader: ({ children }: any) => <div data-testid="dialog-header">{children}</div>,
-    DialogTitle: ({ children }: any) => <h2 data-testid="dialog-title">{children}</h2>,
-    DialogTrigger: ({ children, asChild }: any) => <div data-testid="dialog-trigger-wrapper" asChild={asChild}>{children}</div>,
-    DialogFooter: ({ children }: any) => <div data-testid="dialog-footer">{children}</div>,
+    DialogContent: ({ children }: { children: React.ReactNode }) => <div data-testid="dialog-content-inner">{children}</div>,
+    DialogHeader: ({ children }: { children: React.ReactNode }) => <div data-testid="dialog-header">{children}</div>,
+    DialogTitle: ({ children }: { children: React.ReactNode }) => <h2 data-testid="dialog-title">{children}</h2>,
+    DialogTrigger: ({ children, asChild }: { children: React.ReactNode; asChild?: boolean }) => <div data-testid="dialog-trigger-wrapper" data-as-child={asChild ? 'true' : 'false'}>{children}</div>,
+    DialogFooter: ({ children }: { children: React.ReactNode }) => <div data-testid="dialog-footer">{children}</div>,
   };
 });
 
 jest.mock('@/components/ui/button', () => ({
-  Button: ({ children, onClick, className, ...props }: any) => (
+  Button: ({ 
+    children, 
+    onClick, 
+    className, 
+    ...props 
+  }: { 
+    children: React.ReactNode; 
+    onClick?: () => void; 
+    className?: string; 
+    [key: string]: unknown;
+  }) => (
     <button onClick={onClick} className={className} {...props} data-testid="button">
       {children}
     </button>
@@ -51,21 +71,43 @@ jest.mock('@/components/ui/button', () => ({
 }));
 
 jest.mock('@/components/ui/input', () => ({
-  Input: ({ id, name, value, onChange, className, ...props }: any) => (
+  Input: ({ 
+    id, 
+    name, 
+    value, 
+    onChange, 
+    className, 
+    ...props 
+  }: { 
+    id?: string; 
+    name?: string; 
+    value?: string; 
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; 
+    className?: string; 
+    [key: string]: unknown;
+  }) => (
     <input
       id={id}
       name={name}
       value={value}
       onChange={onChange}
       className={className}
-      data-testid={`input-${name}`}
+      data-testid={`input-${id || name}`}
       {...props}
     />
   ),
 }));
 
 jest.mock('@/components/ui/label', () => ({
-  Label: ({ children, htmlFor, className }: any) => (
+  Label: ({ 
+    children, 
+    htmlFor, 
+    className 
+  }: { 
+    children: React.ReactNode; 
+    htmlFor?: string; 
+    className?: string;
+  }) => (
     <label htmlFor={htmlFor} className={className} data-testid={`label-${htmlFor}`}>
       {children}
     </label>
@@ -178,8 +220,6 @@ describe('EditStudentDialog', () => {
   });
   
   it('closes the dialog after form submission', async () => {
-    // Get access to the Dialog component's onOpenChange mock
-    const Dialog = require('@/components/ui/dialog').Dialog;
     
     render(<EditStudentDialog student={mockStudent} onUpdate={mockOnUpdate} />);
     

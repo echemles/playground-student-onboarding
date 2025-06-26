@@ -6,7 +6,20 @@ import { Column as ColumnType, Student } from '@/lib/types';
 
 // Mock the Droppable component from @hello-pangea/dnd
 jest.mock('@hello-pangea/dnd', () => ({
-  Droppable: ({ children, droppableId }: any) => {
+  Droppable: ({
+    children,
+    droppableId,
+  }: {
+    children: (
+      provided: {
+        innerRef: React.Ref<HTMLElement>;
+        droppableProps: { [key: string]: unknown };
+        placeholder: React.ReactNode;
+      },
+      snapshot: { isDraggingOver: boolean }
+    ) => React.ReactNode;
+    droppableId: string;
+  }) => {
     const provided = {
       innerRef: jest.fn(),
       droppableProps: {
@@ -25,7 +38,7 @@ jest.mock('@hello-pangea/dnd', () => ({
 
 // Mock the StudentCard component
 jest.mock('../StudentCard', () => ({
-  StudentCard: ({ student, index, onUpdate }: any) => (
+  StudentCard: ({ student, index, onUpdate }: { student: Student; index: number; onUpdate?: (id: string, data: Student) => void; }) => (
     <div data-testid={`student-card-${student.id}`} data-index={index}>
       <span>{student.name}</span>
       <button 
@@ -42,6 +55,7 @@ describe('Column', () => {
   const mockColumn: ColumnType = {
     id: 'column-1',
     title: 'To Do',
+    studentIds: [],
   };
   
   const mockStudents: Student[] = [

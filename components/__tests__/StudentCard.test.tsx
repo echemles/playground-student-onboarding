@@ -6,7 +6,22 @@ import { Student } from '@/lib/types';
 
 // Mock the Draggable component from @hello-pangea/dnd
 jest.mock('@hello-pangea/dnd', () => ({
-  Draggable: ({ children, draggableId, index }: any) => {
+  Draggable: ({
+    children,
+    draggableId,
+    index,
+  }: {
+    children: (
+      provided: {
+        draggableProps: { [key: string]: unknown };
+        dragHandleProps: { [key: string]: unknown } | null;
+        innerRef: React.Ref<HTMLElement>;
+      },
+      snapshot: { isDragging: boolean }
+    ) => React.ReactNode;
+    draggableId: string;
+    index: number;
+  }) => {
     const provided = {
       draggableProps: {
         'data-rfd-draggable-id': draggableId,
@@ -28,7 +43,7 @@ jest.mock('@hello-pangea/dnd', () => ({
 
 // Mock the EditStudentDialog component
 jest.mock('../EditStudentDialog', () => ({
-  EditStudentDialog: ({ student, onUpdate }: any) => (
+  EditStudentDialog: ({ student, onUpdate }: { student: Student; onUpdate?: (id: string, updatedData: Student) => void; }) => (
     <button 
       onClick={() => onUpdate && onUpdate(student.id, { ...student, name: 'Updated Name' })}
       data-testid="edit-student-button"
